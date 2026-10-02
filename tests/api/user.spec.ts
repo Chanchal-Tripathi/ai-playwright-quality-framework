@@ -1,10 +1,15 @@
-
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { UserApi } from '../../api/UserApi';
 
-test('create user via api', async () => {
-  const api = new UserApi();
-  const user = await api.createUser();
+test.describe('Reusable API client example', () => {
+  test('repository client returns expected metadata', async ({ request }) => {
+    const api = new UserApi(request);
+    const repository = await api.getRepository(
+      'Chanchal-Tripathi',
+      'ai-playwright-quality-framework'
+    );
 
-  expect(user.name).toBe('QA');
+    expect(repository.name).toBe('ai-playwright-quality-framework');
+    expect(repository.owner.login).toBe('Chanchal-Tripathi');
+  });
 });

@@ -1,15 +1,23 @@
-
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  retries: 2,
-  workers: 4,
-  reporter: [['html'], ['list']],
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 2 : undefined,
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }]
+  ],
+  expect: { timeout: 5_000 },
   use: {
-    baseURL: 'https://reqres.in',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'
-  }
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
+  ],
+  outputDir: 'test-results'
 });
